@@ -10,7 +10,7 @@ import {
   navigationMenuTriggerStyle,
 } from "@/components/ui/navigation-menu";
 
-export default function NavigationMenuDemo() {
+export default function Navbar() {
   return (
     <NavigationMenu className="py-2 px-3">
       <NavigationMenuList>

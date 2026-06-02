@@ -1,7 +1,8 @@
 import { ILogin, IRegister } from '@/types/auth.types'
 import axios from 'axios'
 
-const BASE_URL = "http://localhost:8000/api"
+const API_URL = process.env.API_URL ?? "http://localhost:8000"
+const BASE_URL = API_URL + "/api"
 
 const AUTH_URL = BASE_URL + "/auth"
 const REGISTER_URL = AUTH_URL + "/register"
