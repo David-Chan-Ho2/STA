@@ -10,7 +10,7 @@ function Login() {
   };
 
   const handleSubmit = async (form: ILogin) => {
-    const { data } = await api.login(form);
+    const data = await api.login(form);
     console.log(data);
   };
 

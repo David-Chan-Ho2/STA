@@ -7,8 +7,16 @@ const AUTH_URL = BASE_URL + "/auth"
 const REGISTER_URL = AUTH_URL + "/register"
 const LOGIN_URL = AUTH_URL + "/login"
 
-const registerAPI = (form: IRegister) => axios.post(REGISTER_URL, form).then(res => res.data)
-const loginAPI = (form: ILogin) => axios.post(LOGIN_URL, form).then(res => res)
+const registerAPI = async (form: IRegister) => {
+    const res = await axios.post(REGISTER_URL, form)
+    const data = await res.data
+    return data
+}
+const loginAPI = async (form: ILogin) => {
+    const res = await axios.post(LOGIN_URL, form)
+    const data = await res.data
+    return data
+}
 
 export default {
     register: registerAPI,

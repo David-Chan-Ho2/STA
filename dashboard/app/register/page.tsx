@@ -11,7 +11,7 @@ function Register() {
   };
 
   const handleSubmit = async (form: IRegister) => {
-    const { data } = await api.register(form);
+    const data = await api.register(form);
     console.log(data);
   };
 
