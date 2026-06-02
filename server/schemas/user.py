@@ -5,8 +5,9 @@ class UserBase(BaseModel):
     email: EmailStr
     password: str
 
+
 class UserRegister(UserBase):
-    pass
+    confirmPassword: str
 
 
 class UserLogin(UserBase):
