@@ -17,7 +17,7 @@ def register(payload: UserRegister, db: Session = Depends(get_db)):
 
     if(payload.password != payload.confirmPassword):
         raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail="Password don't match")
-
+    
     return register_user(db, payload)
 
 

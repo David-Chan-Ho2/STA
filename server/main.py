@@ -3,6 +3,7 @@ from fastapi.middleware.cors import CORSMiddleware
 import uvicorn
 
 from config.database import Base, engine
+from config.config import settings
 from api import routers
 
 import models
@@ -11,13 +12,9 @@ Base.metadata.create_all(bind=engine)
 
 app = FastAPI()
 
-origins = [
-    "http://localhost:3000", 
-]
-
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=origins,      
+    allow_origins=settings.ALLOWED_ORIGINS,      
     allow_credentials=True,    
     allow_methods=["*"],        
     allow_headers=["*"],     

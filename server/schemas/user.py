@@ -16,7 +16,7 @@ class UserLogin(UserBase):
 
 class UserResponse(BaseModel):
     id: uuid.UUID
-    email: str
+    email: EmailStr
 
     model_config = {"from_attributes": True}
 
