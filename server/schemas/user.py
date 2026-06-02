@@ -1,15 +1,16 @@
 import uuid
 from pydantic import BaseModel, EmailStr
 
-
-class UserRegister(BaseModel):
+class UserBase(BaseModel):
     email: EmailStr
     password: str
 
+class UserRegister(UserBase):
+    pass
 
-class UserLogin(BaseModel):
-    email: EmailStr
-    password: str
+
+class UserLogin(UserBase):
+    pass
 
 
 class UserResponse(BaseModel):
