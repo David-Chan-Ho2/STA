@@ -7,10 +7,12 @@ import {
   InputGroupAddon,
   InputGroupInput,
 } from "@/components/ui/input-group";
+import { useAuth } from "@/context/AuthContext";
 import { useForm } from "@/hooks/useForm";
 import useRemember from "@/hooks/useRemember";
 import { ILogin } from "@/types/auth.types";
 import { EyeIcon, EyeOffIcon } from "lucide-react";
+import { redirect } from "next/navigation";
 import { useState } from "react";
 
 function Login() {
@@ -18,12 +20,15 @@ function Login() {
     email: "",
     password: "",
   };
+  const { user, token, login, logout, isAuthenticated } = useAuth();
   const { remember, onRemember } = useRemember();
   const [show, setShow] = useState(false);
 
   const handleSubmit = async (form: ILogin) => {
     const data = await api.login(form);
     console.log(data);
+    login(data);
+    redirect("/dashboard");
   };
 
   const { form, onChange, onSubmit, onReset } = useForm<ILogin>({

@@ -9,12 +9,12 @@ export interface ILogin {
     password: string
 }
 
-export interface TokenResponse {
+export interface IToken {
     access_token: string
     token_type: string
 }
 
-export interface UserResponse {
+export interface IUser {
     id: string
     email: string
 }

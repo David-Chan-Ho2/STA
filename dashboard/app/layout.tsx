@@ -1,4 +1,5 @@
 import Navbar from "@/components/navbar/Navbar";
+import { AuthProvider } from "@/context/AuthContext";
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
@@ -29,14 +30,16 @@ export default function RootLayout({
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col">
-        <header>
-          <Navbar />
-        </header>
-        <div className="flex flex-col flex-1 items-center justify-center">
-          <main className="flex flex-1 w-full max-w-3xl flex-col items-center justify-between">
-            {children}
-          </main>
-        </div>
+        <AuthProvider>
+          <header>
+            <Navbar />
+          </header>
+          <div className="flex flex-col flex-1 items-center justify-center">
+            <main className="flex flex-1 w-full max-w-3xl flex-col items-center justify-between">
+              {children}
+            </main>
+          </div>
+        </AuthProvider>
       </body>
     </html>
   );
