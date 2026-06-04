@@ -32,7 +32,7 @@ class UserSession:
         payload = {}
 
         payload.update({
-            "user_id": user.id,
+            "user_id": str(user.id),
             "user_email": user.email,
             "created_at": now,
         })

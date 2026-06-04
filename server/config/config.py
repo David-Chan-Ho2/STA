@@ -14,7 +14,7 @@ class Settings:
 
     ALLOWED_ORIGINS = os.getenv("ALLOWED_ORIGINS", "http://localhost:3000").split(",")
 
-    REDIS_URL = os.getenv("REDIS_URL", "localhost")
+    REDIS_URL = os.getenv("REDIS_URL", "redis://localhost:6379")
     SESSION_TIMEOUT_SECONDS = 1800
 
 settings = Settings()
