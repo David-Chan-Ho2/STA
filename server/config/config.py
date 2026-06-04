@@ -4,11 +4,18 @@ from dotenv import load_dotenv
 load_dotenv()
 
 class Settings:
-    PORT = int(os.environ.get("PORT", 8000))
-    DATABASE_URL = os.getenv("DATABASE_URL")
+    PORT = int(os.getenv("PORT", 8000))
+
     SECRET_KEY = os.getenv("SECRET_KEY", "6c55fd158b8337b7ac8cfb5f786566a0fcce17e8cb65bbfadefbfbd624565a00")
+
+    DATABASE_URL = os.getenv("DATABASE_URL")
     ALGORITHM = "HS256"
     ACCESS_TOKEN_EXPIRE_MINUTES = 30
+
     ALLOWED_ORIGINS = os.getenv("ALLOWED_ORIGINS", "http://localhost:3000").split(",")
+
+    REDIS_HOST = os.getenv("REDIS_HOST", "localhost")
+    REDIS_PORT = int(os.getenv("REDIS_PORT", 6379))
+    SESSION_TIMEOUT_SECONDS = 1800
 
 settings = Settings()

@@ -5,10 +5,9 @@ from config.database import get_db
 from crud.user import get_user_by_email, register_user
 from models.User import User
 from schemas.user import UserRegister, UserLogin, TokenResponse, UserResponse
-from utils.auth import verify_password, create_access_token, get_current_user
+from utils.auth import verify_password, create_access_token, get_current_user, logout_user
 
 router = APIRouter()
-
 
 @router.post("/register", response_model=UserResponse, status_code=status.HTTP_201_CREATED)
 def register(payload: UserRegister, db: Session = Depends(get_db)):
@@ -24,12 +23,17 @@ def register(payload: UserRegister, db: Session = Depends(get_db)):
 @router.post("/login", response_model=TokenResponse)
 def login(payload: UserLogin, db: Session = Depends(get_db)):
     user = get_user_by_email(db, payload.email)
+
     if not user or not verify_password(payload.password, user.password_hash):
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid email or password")
 
-    token = create_access_token({"sub": str(user.id)})
+    token = create_access_token(user)
+
     return {"access_token": token, "token_type": "bearer"}
 
+@router.post("/logout")
+def logout(_=Depends(logout_user)):
+    return True
 
 @router.get("/me", response_model=UserResponse)
 def get_me(current_user: User = Depends(get_current_user)):
