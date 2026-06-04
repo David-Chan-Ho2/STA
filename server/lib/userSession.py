@@ -10,8 +10,8 @@ class UserSession:
 
     def __init__(self) -> None:
         self.redis = redis.Redis(
-                    host=settings.REDIS_HOST, 
-                    port=settings.REDIS_PORT, 
+                    host=settings.REDISHOST, 
+                    port=settings.REDISPORT, 
                     decode_responses=True
                 )
 
