@@ -10,7 +10,7 @@ from config.database import get_db
 from lib.userSession import UserSession
 from models.User import User
 
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/api/user/login")
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/api/auth/login")
 session = UserSession()
 
 def hash_password(password: str) -> str:
