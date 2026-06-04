@@ -14,8 +14,7 @@ class Settings:
 
     ALLOWED_ORIGINS = os.getenv("ALLOWED_ORIGINS", "http://localhost:3000").split(",")
 
-    REDISHOST = os.getenv("REDISHOST", "localhost")
-    REDISPORT = int(os.getenv("REDISPORT", 6379))
+    REDIS_URL = os.getenv("REDIS_URL", "localhost")
     SESSION_TIMEOUT_SECONDS = 1800
 
 settings = Settings()

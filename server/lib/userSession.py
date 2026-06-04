@@ -9,11 +9,11 @@ from config.config import settings
 class UserSession:
 
     def __init__(self) -> None:
-        self.redis = redis.Redis(
-                    host=settings.REDISHOST, 
-                    port=settings.REDISPORT, 
-                    decode_responses=True
-                )
+        
+        self.redis = redis.from_url(
+            settings.REDIS_URL,
+            decode_responses=True
+        )
 
     def _generate_id(self) -> str:
         return str(uuid.uuid4())
