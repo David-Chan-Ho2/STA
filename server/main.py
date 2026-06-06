@@ -10,7 +10,8 @@ from api import routers
 
 import models
 
-Base.metadata.drop_all(bind=engine)
+if settings.ENV == "development":
+    Base.metadata.drop_all(bind=engine)
 Base.metadata.create_all(bind=engine)
 
 # with engine.begin() as conn:

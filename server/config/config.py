@@ -17,4 +17,6 @@ class Settings:
     REDIS_URL = os.getenv("REDIS_URL", "redis://localhost:6379")
     SESSION_TIMEOUT_SECONDS = 1800
 
+    ENV = os.getenv("ENV", "development")
+
 settings = Settings()
