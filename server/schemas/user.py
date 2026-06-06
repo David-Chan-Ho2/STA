@@ -9,7 +9,6 @@ class UserRegister(UserBase):
     password: str
     confirmPassword: str
 
-
 class UserLogin(UserBase):
     password: str
 

@@ -2,10 +2,11 @@ from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
 
 from config.database import get_db
-from crud.user import get_user_by_email, register_user
+from crud.auth import register_user
+from crud.user import get_user_by_email
 from models.User import User
 from schemas.user import UserRegister, UserLogin, TokenResponse, UserResponse
-from utils.auth import verify_password, create_access_token, get_current_user, logout_user
+from utils.auth import verify_password, create_access_token, get_current_user, logout_user, hash_password
 
 router = APIRouter()
 
@@ -17,7 +18,12 @@ def register(payload: UserRegister, db: Session = Depends(get_db)):
     if(payload.password != payload.confirmPassword):
         raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail="Password don't match")
     
-    return register_user(db, payload)
+    user = {
+        "email": payload.email,
+        "password_hash": hash_password(payload.password)
+    }
+    
+    return register_user(db, user)
 
 
 @router.post("/login", response_model=TokenResponse)

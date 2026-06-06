@@ -48,7 +48,7 @@ def get_current_user(token: str = Depends(oauth2_scheme), db: Session = Depends(
     if not session.get_session(session_id):
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Session expired")
 
-    from crud.user import get_user_by_id
+    from crud.auth import get_user_by_id
     user = get_user_by_id(db, user_id)
 
     if not user:
