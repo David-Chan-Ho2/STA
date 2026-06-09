@@ -1,9 +1,9 @@
 from sqlalchemy.orm import Mapped, mapped_column
 from sqlalchemy import String
 
-from models.base import Base
+from models.base import UUIDBase
 
-class SensorType(Base):
+class SensorType(UUIDBase):
     __tablename__ = 'sensor_types'
 
     name: Mapped[str] = mapped_column(String, nullable=False, unique=True)

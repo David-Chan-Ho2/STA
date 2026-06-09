@@ -1,46 +1,61 @@
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, status
 from sqlalchemy.orm import Session
 
 from config.database import get_db
 from crud.auth import register_user
-from crud.user import get_user_by_email
+from crud.user import user_crud
+from exceptions.base import (
+    EmailAlreadyExistsException,
+    InvalidLoginException,
+    PasswordMisMatchException,
+)
 from models.User import User
-from schemas.user import UserRegister, UserLogin, TokenResponse, UserResponse
-from utils.auth import verify_password, create_access_token, get_current_user, logout_user, hash_password
+from schemas.user import UserResponse, CreateUser
+from schemas.auth import AuthRegister, AuthLogin, TokenResponse
+from utils.auth import (
+    verify_password,
+    create_access_token,
+    get_current_user,
+    logout_user,
+    hash_password,
+)
 
 router = APIRouter()
 
-@router.post("/register", response_model=UserResponse, status_code=status.HTTP_201_CREATED)
-def register(payload: UserRegister, db: Session = Depends(get_db)):
-    if get_user_by_email(db, payload.email):
-        raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail="Email already registered")
 
-    if(payload.password != payload.confirmPassword):
-        raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail="Password don't match")
-    
-    user = {
-        "email": payload.email,
-        "password_hash": hash_password(payload.password)
-    }
-    
+@router.post("/register", response_model=UserResponse, status_code=status.HTTP_201_CREATED)
+def register(payload: AuthRegister, db: Session = Depends(get_db)) -> User:
+    if user_crud.get(db, email=payload.email):
+        raise EmailAlreadyExistsException()
+
+    if payload.password != payload.confirmPassword:
+        raise PasswordMisMatchException()
+
+    user = CreateUser (
+        email=payload.email,
+        password_hash=hash_password(payload.password),
+    )
+
     return register_user(db, user)
 
 
 @router.post("/login", response_model=TokenResponse)
-def login(payload: UserLogin, db: Session = Depends(get_db)):
-    user = get_user_by_email(db, payload.email)
+def login(payload: AuthLogin, db: Session = Depends(get_db)) -> dict[str, str]:
+    user = user_crud.get(db, email=payload.email)
 
     if not user or not verify_password(payload.password, user.password_hash):
-        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid email or password")
+        raise InvalidLoginException()
 
     token = create_access_token(user)
 
     return {"access_token": token, "token_type": "bearer"}
 
-@router.post("/logout")
-def logout(_=Depends(logout_user)):
+
+@router.post("/logout", status_code=status.HTTP_200_OK)
+def logout(_=Depends(logout_user)) -> bool:
     return True
 
+
 @router.get("/me", response_model=UserResponse)
-def get_me(current_user: User = Depends(get_current_user)):
+def get_me(current_user: User = Depends(get_current_user)) -> User:
     return current_user

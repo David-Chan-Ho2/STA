@@ -1,9 +1,22 @@
-from pydantic import EmailStr
+from typing import Any
+
 from sqlalchemy.orm import Session
 from models.User import User
 from crud.base import CRUDBase
+from schemas.user import CreateUser
 
-crud = CRUDBase(User)
+class AuthCrud(CRUDBase):
+    def __init__(self):
+        super().__init__(User)
 
-def register_user(db: Session, payload: dict[str, EmailStr]):
-    return crud.create(db, payload)
+    def create(self, db: Session, obj_in: Any) -> Any:
+        db_obj = self.model(**obj_in.model_dump())
+        db.add(db_obj)
+        db.commit()
+        db.refresh(db_obj)
+        return db_obj
+    
+auth_crud = AuthCrud()
+
+def register_user(db: Session, payload: CreateUser):
+    return auth_crud.create(db, payload)
