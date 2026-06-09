@@ -11,10 +11,11 @@ if TYPE_CHECKING:
     from models.Device import Device
 
 
-class SensorReading(UUIDBase, TimeScaleBase):
+class SensorReading(TimeScaleBase):
     __tablename__ = 'sensor_readings'
 
-    device_id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), ForeignKey("devices.id"), primary_key=True, nullable=False, index=True)
+    id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), default=uuid.uuid4)
+    device_id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), ForeignKey("devices.id"), nullable=False, index=True)
     sensor_type_id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), ForeignKey("sensor_types.id"), nullable=False, index=True)
 
     value: Mapped[float] = mapped_column(Float, nullable=False)
