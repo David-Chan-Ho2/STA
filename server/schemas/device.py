@@ -14,21 +14,10 @@ class CreateDevice(BaseModel):
     name: str
     location: str
 
-class GetDevices(BaseModel):
-    user_id: str
-    skip: int
-    limit: int
-
-class GetDevice(BaseModel):
-    id: str
-
 class UpdateDevice(BaseModel):
     user_id: Optional[str] = None
     name: Optional[str] = None
     location: Optional[str] = None
-
-class DeleteDevice(BaseModel):
-    id: str
 
 class DeviceResponse(BaseModel):
     id: uuid.UUID

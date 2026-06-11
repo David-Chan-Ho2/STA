@@ -3,7 +3,6 @@ from typing import Any
 from sqlalchemy.orm import Session
 from models.User import User
 from crud.base import CRUDBase
-from schemas.user import CreateUser
 
 class AuthCrud(CRUDBase):
     def __init__(self):
@@ -17,6 +16,3 @@ class AuthCrud(CRUDBase):
         return db_obj
     
 auth_crud = AuthCrud()
-
-def register_user(db: Session, payload: CreateUser):
-    return auth_crud.create(db, payload)

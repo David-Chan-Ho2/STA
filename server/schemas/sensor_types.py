@@ -6,19 +6,9 @@ class CreateSensorType(BaseModel):
     name: str
     unit: str
 
-class GetSensorTypes(BaseModel):
-    skip: int
-    limit: int
-
-class GetSensorType(BaseModel):
-    id: str
-
 class UpdateSensorType(BaseModel):
     name: Optional[str] = None
     unit: Optional[str] = None
-
-class DeleteSensorType(BaseModel):
-    id: str
 
 class SensorTypeResponse(BaseModel):
     id: uuid.UUID

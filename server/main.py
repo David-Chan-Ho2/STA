@@ -8,7 +8,8 @@ from api import routers
 
 import models
 
-# Base.metadata.drop_all(bind=engine)
+if settings.ENV == "development":
+    Base.metadata.drop_all(bind=engine)
 Base.metadata.create_all(bind=engine)
 
 app = FastAPI()
@@ -24,10 +25,8 @@ app.add_middleware(
 app.include_router(routers.router, prefix="/api")
 
 @app.get("/")
-def health_check():
-    return {
-        "status": "healthy",
-    }
+def health():
+    return {"status": "ok"}
 
 if __name__ == "__main__":
     uvicorn.run(

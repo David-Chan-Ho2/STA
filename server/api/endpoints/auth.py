@@ -1,8 +1,7 @@
-from fastapi import APIRouter, Depends, status
+from fastapi import Depends, status
 from sqlalchemy.orm import Session
-
+from api.endpoints.base import BaseRouter
 from config.database import get_db
-from crud.auth import register_user
 from crud.user import user_crud
 from exceptions.base import (
     EmailAlreadyExistsException,
@@ -20,42 +19,75 @@ from utils.auth import (
     hash_password,
 )
 
-router = APIRouter()
+class AuthRouter(BaseRouter):
 
+    def __init__(self):
+        super().__init__(
+            crud=user_crud, 
+            response_schema=None, 
+            name="Auth", 
+            disable_create=True, 
+            disable_get_all=True, 
+            disable_get=True, 
+            disable_update=True, 
+            disable_delete=True
+        )
 
-@router.post("/register", response_model=UserResponse, status_code=status.HTTP_201_CREATED)
-def register(payload: AuthRegister, db: Session = Depends(get_db)) -> User:
-    if user_crud.get(db, email=payload.email):
-        raise EmailAlreadyExistsException()
+        self.router.add_api_route(
+            "/register",
+            self.register,
+            methods=["POST"],
+            response_model=UserResponse,
+            status_code=status.HTTP_201_CREATED
+        )
+        self.router.add_api_route(
+            "/login",
+            self.login,
+            methods=["POST"],
+            response_model=TokenResponse,
+            status_code=status.HTTP_200_OK
+        )
+        self.router.add_api_route(
+            "/logout",
+            self.logout,
+            response_model=None,
+            status_code=status.HTTP_200_OK
+        )
+        self.router.add_api_route(
+            "/me",
+            self.get_me,
+            response_model=UserResponse, 
+            status_code=status.HTTP_200_OK
+        )
 
-    if payload.password != payload.confirmPassword:
-        raise PasswordMisMatchException()
+    def register(self, payload: AuthRegister, db: Session = Depends(get_db)) -> User:
+        if user_crud.get(db, email=payload.email):
+            raise EmailAlreadyExistsException()
 
-    user = CreateUser (
-        email=payload.email,
-        password_hash=hash_password(payload.password),
-    )
+        if payload.password != payload.confirmPassword:
+            raise PasswordMisMatchException()
 
-    return register_user(db, user)
+        user = CreateUser (
+            email=payload.email,
+            password_hash=hash_password(payload.password),
+        )
 
+        return super().create(user, db)
+    
+    def login(self, payload: AuthLogin, db: Session = Depends(get_db)):
+        user = user_crud.get(db, email=payload.email)
 
-@router.post("/login", response_model=TokenResponse)
-def login(payload: AuthLogin, db: Session = Depends(get_db)) -> dict[str, str]:
-    user = user_crud.get(db, email=payload.email)
+        if not user or not verify_password(payload.password, user.password_hash):
+            raise InvalidLoginException()
 
-    if not user or not verify_password(payload.password, user.password_hash):
-        raise InvalidLoginException()
+        token = create_access_token(user)
 
-    token = create_access_token(user)
+        return {"access_token": token, "token_type": "bearer"}
+    
+    def logout(self, _=Depends(logout_user)) -> bool:
+        return True
 
-    return {"access_token": token, "token_type": "bearer"}
-
-
-@router.post("/logout", status_code=status.HTTP_200_OK)
-def logout(_=Depends(logout_user)) -> bool:
-    return True
-
-
-@router.get("/me", response_model=UserResponse)
-def get_me(current_user: User = Depends(get_current_user)) -> User:
-    return current_user
+    def get_me(self, current_user: User = Depends(get_current_user)) -> User:
+        return current_user
+    
+auth_router = AuthRouter()

@@ -5,7 +5,7 @@ from sqlalchemy.orm import Mapped, mapped_column, relationship
 from sqlalchemy import Float, ForeignKey, PrimaryKeyConstraint
 from sqlalchemy.dialects.postgresql import UUID
 
-from models.base import UUIDBase, TimeScaleBase
+from models.base import TimeScaleBase
 
 if TYPE_CHECKING:
     from models.Device import Device

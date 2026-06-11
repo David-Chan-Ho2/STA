@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, status, Query
+from fastapi import Depends, status
 from sqlalchemy.orm import Session
 
 from config.database import get_db
@@ -6,82 +6,63 @@ from crud.sensor_types import sensor_types_crud
 from crud.devices import device_crud
 from crud.sensor_reading import sensor_reading_crud
 from exceptions.base import NotFoundException
-from models.SensorReading import SensorReading
 from schemas.sensor_reading import (
+    BatchCreateSensorReading,
+    BatchInsertResponse,
     CreateSensorReading,
-    SensorReadingResponse,
-    UpdateSensorReading,
+    SensorReadingResponse
 )
+from api.endpoints.base import BaseRouter
 
-router = APIRouter()
+class SensorReadingRouter(BaseRouter):
 
+    def __init__(self):
+        super().__init__(
+            crud=sensor_reading_crud,
+            response_schema=SensorReadingResponse,
+            create_schema=CreateSensorReading,
+            name="SensorReading",
+            disable_update=True,
+            disable_delete=True,
+        )
 
-@router.post("", response_model=SensorReadingResponse, status_code=status.HTTP_201_CREATED)
-def create_sensor_reading(
-    payload: CreateSensorReading,
-    db: Session = Depends(get_db),
-) -> SensorReading:
-    device = device_crud.get_by_id(db, payload.device_id)
+        self.router.add_api_route(
+            "/batch",
+            self.create_batch,
+            methods=["POST"],
+            response_model=BatchInsertResponse,
+            status_code=status.HTTP_201_CREATED
+        )
 
-    if device is None:
-        raise NotFoundException(resource_name="Device", resource_id=payload.device_id)
+    def create(self, payload: CreateSensorReading, db: Session = Depends(get_db)) -> SensorReadingResponse:
+        device = device_crud.get_by_id(db, payload.device_id)
 
-    sensor_type = sensor_types_crud.get_by_id(db, payload.sensor_type_id)
+        if device is None:
+            raise NotFoundException(resource_name="Device", resource_id=payload.device_id)
 
-    if sensor_type is None:
-        raise NotFoundException(resource_name="Sensor Type", resource_id=payload.sensor_type_id)
+        sensor_type = sensor_types_crud.get_by_id(db, payload.sensor_type_id)
 
-    return sensor_reading_crud.create(db, payload)
+        if sensor_type is None:
+            raise NotFoundException(resource_name="Sensor Type", resource_id=payload.sensor_type_id)
 
+        return super().create(payload, db)
 
-@router.get("", response_model=list[SensorReadingResponse], status_code=status.HTTP_200_OK)
-def get_sensor_readings(
-    skip: int = Query(0, ge=0),
-    limit: int = Query(100, ge=1),
-    db: Session = Depends(get_db),
-) -> list[SensorReading]:
-    return sensor_reading_crud.get_all(db, skip, limit)
+    def create_batch(
+        self,
+        payload: BatchCreateSensorReading,
+        db: Session = Depends(get_db),
+    ) -> BatchInsertResponse:
+        unique_device_ids = {r.device_id for r in payload.readings}
+        for device_id in unique_device_ids:
+            if device_crud.get_by_id(db, device_id) is None:
+                raise NotFoundException(resource_name="Device", resource_id=device_id)
 
+        unique_sensor_type_ids = {r.sensor_type_id for r in payload.readings}
+        for sensor_type_id in unique_sensor_type_ids:
+            if sensor_types_crud.get_by_id(db, sensor_type_id) is None:
+                raise NotFoundException(resource_name="Sensor Type", resource_id=sensor_type_id)
 
-@router.get("/{id}", response_model=SensorReadingResponse, status_code=status.HTTP_200_OK)
-def get_sensor_reading(
-    id: str,
-    db: Session = Depends(get_db),
-) -> SensorReading:
-    sensor_reading = sensor_reading_crud.get_by_id(db, id)
+        result = sensor_reading_crud.create_batch(db, payload)
+        return BatchInsertResponse(**result)
 
-    if sensor_reading is None:
-        raise NotFoundException(resource_name="Sensor Reading", resource_id=id)
-
-    return sensor_reading
-
-
-@router.patch("/{id}", response_model=SensorReadingResponse, status_code=status.HTTP_200_OK)
-def update_sensor_reading(
-    id: str,
-    payload: UpdateSensorReading,
-    db: Session = Depends(get_db),
-) -> SensorReading:
-    sensor_reading = sensor_reading_crud.get_by_id(db, id)
-
-    if sensor_reading is None:
-        raise NotFoundException(resource_name="Sensor Reading", resource_id=id)
-
-    return sensor_reading_crud.update(
-        db,
-        sensor_reading,
-        payload,
-    )
-
-
-@router.delete("/{id}", status_code=status.HTTP_204_NO_CONTENT)
-def delete_sensor_reading(
-    id: str,
-    db: Session = Depends(get_db),
-) -> None:
-    sensor_reading = sensor_reading_crud.delete(db, id)
-
-    if sensor_reading is None:
-        raise NotFoundException(resource_name="Sensor Reading", resource_id=id)
-
-    return None
+sensor_reading_router = SensorReadingRouter()

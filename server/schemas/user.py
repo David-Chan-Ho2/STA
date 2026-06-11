@@ -9,13 +9,6 @@ class CreateUser(BaseModel):
     email: EmailStr
     password_hash: str
 
-class GetUser(BaseModel):
-    id: str
-
-class GetUsers(BaseModel):
-    skip: int
-    limit: int
-
 class UserResponse(BaseModel):
     
     id: uuid.UUID

@@ -16,21 +16,11 @@ class CreateSensorReading(BaseModel):
     sensor_type_id: str
     value: float
 
-class GetSensorReadings(BaseModel):
-    skip: int
-    limit: int
+class BatchCreateSensorReading(BaseModel):
+    readings: list[CreateSensorReading]
 
-class GetSensorReading(BaseModel):
-    id: str
-
-class UpdateSensorReading(BaseModel):
-    device_id: Optional[uuid.UUID] = None
-    sensor_type_id: Optional[uuid.UUID] = None
-    value: Optional[float] = None
-
-class DeleteSensorReading(BaseModel):
-    id: str
-    time: datetime
+class BatchInsertResponse(BaseModel):
+    inserted: int
 
 class SensorReadingResponse(BaseModel):
     id: uuid.UUID
