@@ -21,6 +21,7 @@ dependencies = [
     "pytest-asyncio>=1.4.0",
     "fakeredis>=2.36.1",
     "httpx2>=2.3.0",
+    "qrcode[pil]>=8.2",
 ]
 
 [tool.pytest.ini_options]

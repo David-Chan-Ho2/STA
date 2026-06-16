@@ -11,18 +11,15 @@ class CRUDBase(Generic[ModelType]):
         """
         self.model = model
 
-    def get(self, db: Session, **kwargs: Any) -> Optional[ModelType]:
-        return db.query(self.model).filter_by(**kwargs).first()
+    def get(self, db: Session, **filters: Any) -> Optional[ModelType]:
+        return db.query(self.model).filter_by(**filters).first()
     
     def get_by_id(self, db: Session, id: str) -> Optional[ModelType]:
         return self.get(db, id=id)
 
-    def get_all(self, db: Session, skip: int = 0, limit: int = 100) -> List[ModelType]:
-        return db.query(self.model).offset(skip).limit(limit).all()
-    
-    def get_all_filtered(self, db: Session, skip: int = 0, limit: int = 100, **kwargs: Any) -> List[ModelType]:
+    def get_all(self, db: Session, skip: int = 0, limit: int = 100, **kwargs: Any) -> List[ModelType]:
         return db.query(self.model).filter_by(**kwargs).offset(skip).limit(limit).all()
-    
+
     def create(self, db: Session, obj_in: Any) -> ModelType:
         db_obj = self.model(**obj_in.model_dump())
         db.add(db_obj)
@@ -50,3 +47,4 @@ class CRUDBase(Generic[ModelType]):
         db.delete(obj)
         db.commit()
         return obj
+    

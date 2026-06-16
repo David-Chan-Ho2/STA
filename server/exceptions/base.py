@@ -1,8 +1,8 @@
 from fastapi import HTTPException, status
 
 class NotFoundException(HTTPException):
-    def __init__(self, resource_name: str, resource_id:str) -> None:
-        detail = f"{resource_name} with ID {resource_id} not found!"
+    def __init__(self, resource_name: str) -> None:
+        detail = f"{resource_name} not found!"
         super().__init__(status.HTTP_404_NOT_FOUND, detail)
 
 class PasswordMisMatchException(HTTPException):

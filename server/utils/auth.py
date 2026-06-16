@@ -66,4 +66,3 @@ def logout_user(token: str = Depends(oauth2_scheme)):
     
     if not session.delete_session(session_id):
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Session not found or already expired")
-    

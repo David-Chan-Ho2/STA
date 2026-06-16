@@ -38,12 +38,12 @@ class SensorReadingRouter(BaseRouter):
         device = device_crud.get_by_id(db, payload.device_id)
 
         if device is None:
-            raise NotFoundException(resource_name="Device", resource_id=payload.device_id)
+            raise NotFoundException(resource_name="Device")
 
         sensor_type = sensor_types_crud.get_by_id(db, payload.sensor_type_id)
 
         if sensor_type is None:
-            raise NotFoundException(resource_name="Sensor Type", resource_id=payload.sensor_type_id)
+            raise NotFoundException(resource_name="Sensor Type")
 
         return super().create(payload, db)
 
@@ -55,12 +55,12 @@ class SensorReadingRouter(BaseRouter):
         unique_device_ids = {r.device_id for r in payload.readings}
         for device_id in unique_device_ids:
             if device_crud.get_by_id(db, device_id) is None:
-                raise NotFoundException(resource_name="Device", resource_id=device_id)
+                raise NotFoundException(resource_name="Device")
 
         unique_sensor_type_ids = {r.sensor_type_id for r in payload.readings}
         for sensor_type_id in unique_sensor_type_ids:
             if sensor_types_crud.get_by_id(db, sensor_type_id) is None:
-                raise NotFoundException(resource_name="Sensor Type", resource_id=sensor_type_id)
+                raise NotFoundException(resource_name="Sensor Type")
 
         result = sensor_reading_crud.create_batch(db, payload)
         return BatchInsertResponse(**result)

@@ -19,7 +19,7 @@ class BaseRouter(Generic[T, TCreate, TUpdate]):
             update_schema: Optional[type[TUpdate]] = None,
             disable_create: bool = False,
             disable_get_all: bool = False,
-            disable_get: bool = False,
+            disable_get_by_id: bool = False,
             disable_update: bool = False,
             disable_delete: bool = False
         ):
@@ -51,10 +51,10 @@ class BaseRouter(Generic[T, TCreate, TUpdate]):
                     status_code=status.HTTP_200_OK
                 )
 
-            if not disable_get:
+            if not disable_get_by_id:
                 self.router.add_api_route(
                     '/{id}',
-                    self.get,
+                    self.get_by_id,
                     methods=['GET'],
                     response_model=response_schema,
                     status_code=status.HTTP_200_OK
@@ -96,8 +96,20 @@ class BaseRouter(Generic[T, TCreate, TUpdate]):
         db: Session = Depends(get_db)
     ) -> list[T]:
         return self.crud.get_all(db, skip, limit)
-
+   
     def get(
+        self,
+        filter: str,
+        db: Session = Depends(get_db)
+    ) -> T:
+        item = self.crud.get(db, filter)
+
+        if item is None:
+            raise NotFoundException(resource_name=self.name)
+
+        return item
+    
+    def get_by_id(
         self,
         id: str,
         db: Session = Depends(get_db)
@@ -105,7 +117,7 @@ class BaseRouter(Generic[T, TCreate, TUpdate]):
         item = self.crud.get_by_id(db, id)
 
         if item is None:
-            raise NotFoundException(resource_name=self.name, resource_id=id)
+            raise NotFoundException(resource_name=self.name)
 
         return item
 
@@ -118,7 +130,7 @@ class BaseRouter(Generic[T, TCreate, TUpdate]):
             item = self.crud.get_by_id(db, id)
 
             if item is None:
-                raise NotFoundException(resource_name=self.name, resource_id=id)
+                raise NotFoundException(resource_name=self.name)
 
             return self.crud.update(db, item, payload)
 
@@ -130,6 +142,6 @@ class BaseRouter(Generic[T, TCreate, TUpdate]):
             item = self.crud.delete(db, id)
 
             if item is None:
-                raise NotFoundException(resource_name=self.name, resource_id=id)
+                raise NotFoundException(resource_name=self.name)
 
             return item

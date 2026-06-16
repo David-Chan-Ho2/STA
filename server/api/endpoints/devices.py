@@ -5,9 +5,10 @@ from config.database import get_db
 from crud.user import user_crud
 from crud.devices import device_crud
 from exceptions.base import NotFoundException
-from schemas.device import DeviceResponse, CreateDevice, UpdateDevice
+from schemas.device import DeviceResponse, CreateDevice, UpdateDevice, ClaimDevice
 from api.endpoints.base import BaseRouter
 from schemas.sensor_reading import SensorReadingResponse
+from datetime import datetime, UTC
 
 class DeviceRouter(BaseRouter):
 
@@ -26,38 +27,51 @@ class DeviceRouter(BaseRouter):
             response_model=list[SensorReadingResponse], 
             status_code=status.HTTP_200_OK
         )
+        self.router.add_api_route(
+            '/claim/{claim_code}', 
+            self.claim_device, 
+            methods=['POST'], 
+            response_model=DeviceResponse, 
+            status_code=status.HTTP_200_OK
+        )
 
     def create(
         self,
         payload: CreateDevice,
         db: Session = Depends(get_db),
     ):
-        user = user_crud.get_by_id(db, payload.user_id)
+        if payload.user_id and user_crud.get_by_id(db, payload.user_id) is None:
+            raise NotFoundException(resource_name="User")
 
-        if user is None:
-            raise NotFoundException(resource_name="User", resource_id=payload.user_id)
-        
         return super().create(payload, db)
 
-    def update(
-        self,
-        payload: UpdateDevice,
-        id: str,
-        db: Session = Depends(get_db),
-    ):
-        return super().update(payload, id, db)
-    
     def get_readings(
             self,
             id: str,
             db: Session = Depends(get_db),
     ):
-        device = self.get(id, db)
+        device = self.get_by_id(id, db)
+        return device.readings
+    
+    def claim_device(
+            self, 
+            payload: ClaimDevice,
+            claim_code: str,
+            db: Session = Depends(get_db)
+        ):
+        device = self.crud.get(db, claim_code=claim_code)
 
         if device is None:
-            raise NotFoundException(resource_name="Device", resource_id=id)
+            raise NotFoundException(resource_name="Device")
         
-        return device.readings
+        user = user_crud.get_by_id(db, payload.user_id)
+
+        if user is None:
+            raise NotFoundException(resource_name="User")
         
+        payload.claimed_at = datetime.now(UTC)
+        
+        return self.update(payload, device.id,db)
+    
 
 device_router = DeviceRouter()

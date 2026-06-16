@@ -28,7 +28,7 @@ class AuthRouter(BaseRouter):
             name="Auth", 
             disable_create=True, 
             disable_get_all=True, 
-            disable_get=True, 
+            disable_get_by_id=True, 
             disable_update=True, 
             disable_delete=True
         )

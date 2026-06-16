@@ -35,6 +35,21 @@ def test_create_device_user_not_found(client: TestClient):
     })
     assert response.status_code == 404
 
+def test_create_device_no_user(client: TestClient):
+    name = "no_user"
+
+    response = client.post(API_URL, json={
+        "name": name,
+        "location": "Nowhere",
+    })
+
+    assert response.status_code == 201
+    
+    data = response.json()
+    assert data['name'] == name
+    assert data['user_id'] == None
+    assert data['user'] == None
+
 
 def test_get_device_by_id(client: TestClient, test_device: dict):
     response = client.get(f"{API_URL}/{test_device['id']}")
@@ -104,3 +119,21 @@ def test_get_device_readings_empty(client: TestClient, test_device: dict):
 def test_get_device_readings_not_found(client: TestClient):
     response = client.get(f"{API_URL}/{uuid.uuid4()}/readings")
     assert response.status_code == 404
+
+def test_get_device_by_claim_code(client: TestClient, test_user: dict, test_device: dict):
+    claim_response = client.post(f"{API_URL}/claim/{test_device['claim_code']}", json={
+        'user_id': test_user['id']
+    })
+
+    assert claim_response.status_code == 200
+
+    get_response = client.get(f"{API_URL}/{test_device['id']}")
+
+    assert get_response.status_code == 200
+
+    get_data = get_response.json()
+    claim_data = claim_response.json()
+
+    assert get_data['id'] == claim_data['id']
+    assert get_data['user_id'] == test_user['id']
+
