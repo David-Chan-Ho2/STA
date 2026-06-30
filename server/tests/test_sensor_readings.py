@@ -3,7 +3,6 @@ from fastapi.testclient import TestClient
 from sqlalchemy import delete as sql_delete
 
 from config.database import SessionLocal
-from crud.sensor_reading import sensor_reading_crud
 from models.SensorReading import SensorReading
 
 API_URL = "/api/sensor_readings"
@@ -48,7 +47,8 @@ def test_create_sensor_reading(client: TestClient, test_device: dict, test_senso
     assert 'time' in data
 
     with SessionLocal() as db:
-        sensor_reading_crud.delete(db, data['id'])
+        db.execute(sql_delete(SensorReading).where(SensorReading.id == uuid.UUID(data['id'])))
+        db.commit()
 
 
 def test_create_sensor_reading_device_not_found(client: TestClient, test_sensor_type: dict):

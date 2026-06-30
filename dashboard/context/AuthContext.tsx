@@ -1,7 +1,7 @@
 "use client";
 
 import api from "@/api";
-import { IToken, IUser } from "@/types/auth.types";
+import { ILogin, IRegister, IToken, IUser } from "@/types/auth.types";
 import {
   createContext,
   ReactNode,
@@ -14,7 +14,8 @@ type AuthContextType = {
   user: IUser | null;
   token: IToken | null;
   isAuthenticated: boolean;
-  login: (tokenData: IToken) => Promise<void>;
+  register: (form: IRegister) => Promise<void>;
+  login: (form: ILogin) => Promise<void>;
   logout: () => void;
 };
 
@@ -25,22 +26,31 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [token, setToken] = useState<IToken | null>(null);
 
   useEffect(() => {
-    const savedToken = localStorage.getItem("token")
-    if (!savedToken) return
-    setToken({ access_token: savedToken, token_type: "bearer" })
-    api.getMe().then(setUser).catch(() => {
-      localStorage.removeItem("token")
-    })
+    const savedToken = localStorage.getItem("token");
+    if (!savedToken) return;
+    setToken({ access_token: savedToken, token_type: "bearer" });
+    api.auth
+      .getMe()
+      .then(setUser)
+      .catch(() => {
+        localStorage.removeItem("token");
+      });
   }, []);
 
-  const login = async (tokenData: IToken) => {
-    localStorage.setItem("token", tokenData.access_token)
-    setToken(tokenData)
-    const userData = await api.getMe()
-    setUser(userData)
+  const register = async (form: IRegister) => {
+    await api.auth.email.register(form);
+  };
+
+  const login = async (form: ILogin) => {
+    const token = await api.auth.email.login(form);
+    localStorage.setItem("token", token.access_token);
+    setToken(token);
+    const userData = await api.auth.getMe();
+    setUser(userData);
   };
 
   const logout = () => {
+    api.auth.logout();
     setUser(null);
     setToken(null);
     localStorage.removeItem("token");
@@ -52,6 +62,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         user,
         token,
         isAuthenticated: !!user,
+        register,
         login,
         logout,
       }}

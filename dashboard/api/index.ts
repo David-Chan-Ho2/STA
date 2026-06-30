@@ -1,41 +1,36 @@
-import { ILogin, IRegister } from '@/types/auth.types'
-import axios from 'axios'
-
-const API_URL = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8000"
-const BASE_URL = API_URL + "/api"
-
-const AUTH_URL = BASE_URL + "/auth"
-const REGISTER_URL = AUTH_URL + "/register"
-const LOGIN_URL = AUTH_URL + "/login"
-const ME_URL = AUTH_URL + "/me"
-
-const authAxios = axios.create()
-
-authAxios.interceptors.request.use((config) => {
-    const token = localStorage.getItem("token")
-    if (token) {
-        config.headers.Authorization = `Bearer ${token}`
-    }
-    return config
-})
-
-const registerAPI = async (form: IRegister) => {
-    const res = await axios.post(REGISTER_URL, form)
-    return res.data
-}
-
-const loginAPI = async (form: ILogin) => {
-    const res = await axios.post(LOGIN_URL, form)
-    return res.data
-}
-
-const getMeAPI = async () => {
-    const res = await authAxios.get(ME_URL)
-    return res.data
-}
+import { getMeAPI, loginEmailAPI, loginSSOAPI, logoutAPI, registerEmailAPI, registerSSOAPI } from './auth.api'
+import { claimDeviceAPI, deleteDeviceAPI, getDeviceAPI, getDevicesAPI, getDeviceStatsAPI } from './devices.api'
+import { addUserToOrgAPI, createOrgAPI, deleteOrgAPI, getOrgAPI, getOrgsAPI, getOrgDevicesAPI, getOrgUsersAPI, removeUserFromOrgAPI, updateOrgAPI } from './orgs.api'
 
 export default {
-    register: registerAPI,
-    login: loginAPI,
-    getMe: getMeAPI,
+    auth: {
+        email: {
+            register: registerEmailAPI,
+            login: loginEmailAPI,
+        },
+        sso: {
+            register: registerSSOAPI,
+            login: loginSSOAPI,
+        },
+        logout: logoutAPI,
+        getMe: getMeAPI,
+    },
+    devices: {
+        stats: getDeviceStatsAPI,
+        getAll: getDevicesAPI,
+        get: getDeviceAPI,
+        delete: deleteDeviceAPI,
+        claim: claimDeviceAPI,
+    },
+    orgs: {
+        getAll: getOrgsAPI,
+        get: getOrgAPI,
+        getUsers: getOrgUsersAPI,
+        getDevices: getOrgDevicesAPI,
+        create: createOrgAPI,
+        update: updateOrgAPI,
+        delete: deleteOrgAPI,
+        addUser: addUserToOrgAPI,
+        removeUser: removeUserFromOrgAPI,
+    },
 }

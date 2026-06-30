@@ -18,8 +18,6 @@ class BaseRouter(Generic[T, TCreate, TUpdate]):
             create_schema: Optional[type[TCreate]] = None,
             update_schema: Optional[type[TUpdate]] = None,
             disable_create: bool = False,
-            disable_get_all: bool = False,
-            disable_get_by_id: bool = False,
             disable_update: bool = False,
             disable_delete: bool = False
         ):
@@ -42,23 +40,23 @@ class BaseRouter(Generic[T, TCreate, TUpdate]):
                     status_code=status.HTTP_201_CREATED
                 )
 
-            if not disable_get_all:
-                self.router.add_api_route(
-                    '',
-                    self.get_all,
-                    methods=['GET'],
-                    response_model=list[response_schema],
-                    status_code=status.HTTP_200_OK
-                )
+            self.router.add_api_route(
+                '',
+                self.get_all,
+                methods=['GET'],
+                response_model=list[response_schema],
+                status_code=status.HTTP_200_OK
+            )
 
-            if not disable_get_by_id:
-                self.router.add_api_route(
-                    '/{id}',
-                    self.get_by_id,
-                    methods=['GET'],
-                    response_model=response_schema,
-                    status_code=status.HTTP_200_OK
-                )
+            self._register_pre_id_routes()
+
+            self.router.add_api_route(
+                '/{id}',
+                self.get_by_id,
+                methods=['GET'],
+                response_model=response_schema,
+                status_code=status.HTTP_200_OK
+            )
 
             if not disable_update:
                 _self = self
@@ -81,6 +79,9 @@ class BaseRouter(Generic[T, TCreate, TUpdate]):
                     response_model=None,
                     status_code=status.HTTP_204_NO_CONTENT
                 )
+
+    def _register_pre_id_routes(self):
+        pass
 
     def create(
         self,

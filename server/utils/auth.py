@@ -2,13 +2,14 @@ from datetime import datetime, timedelta, timezone
 
 import bcrypt
 from jose import JWTError, jwt
-from fastapi import Depends, HTTPException, status
+from fastapi import Depends
 from fastapi.security import OAuth2PasswordBearer
 from sqlalchemy.orm import Session
 from config.config import settings
 from config.database import get_db
 from lib.userSession import UserSession
 from crud.user import user_crud
+from exceptions.base import InvalidTokenException, SessionExpiredException, UserNotFoundException, SessionNotFoundException
 
 from models.User import User
 
@@ -37,7 +38,7 @@ def decode_token(token: str) -> dict:
     try:
         return jwt.decode(token, settings.SECRET_KEY, algorithms=[settings.ALGORITHM])
     except JWTError:
-        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid or expired token")
+        raise InvalidTokenException()
 
 def get_current_user(token: str = Depends(oauth2_scheme), db: Session = Depends(get_db)):
     payload = decode_token(token)
@@ -45,15 +46,15 @@ def get_current_user(token: str = Depends(oauth2_scheme), db: Session = Depends(
     session_id = payload.get("sid")
 
     if not user_id or not session_id:
-        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid token")
+        raise InvalidTokenException()
 
     if not session.get_session(session_id):
-        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Session expired")
+        raise SessionExpiredException()
 
     user = user_crud.get_by_id(db, user_id)
 
     if not user:
-        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="User not found")
+        raise UserNotFoundException()
 
     return user
 
@@ -62,7 +63,7 @@ def logout_user(token: str = Depends(oauth2_scheme)):
     session_id = payload.get("sid")
 
     if not session_id:
-        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid session")
+        raise SessionExpiredException()
     
     if not session.delete_session(session_id):
-        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Session not found or already expired")
+        raise SessionNotFoundException()

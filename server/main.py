@@ -1,20 +1,23 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 import uvicorn
-from config.ws import ConnectionManager
-from config.database import engine, Base
+
+from config.database import engine, Base, setup_timescale
 from config.config import settings
 from api import routers
-from api.endpoints.health import router as health_router
 
 import models
 
 if settings.ENV == "development":
     Base.metadata.drop_all(bind=engine)
 Base.metadata.create_all(bind=engine)
+setup_timescale()
+
+if settings.ENV == "development":
+    from scripts.seed import seed
+    seed()
 
 app = FastAPI()
-manager = ConnectionManager()
 
 app.add_middleware(
     CORSMiddleware,

@@ -39,7 +39,6 @@ class CRUDBase(Generic[ModelType]):
         db.refresh(db_obj)
         return db_obj
     
-
     def delete(self, db: Session, id: str) -> Optional[ModelType]:
         obj = db.get(self.model, id)
         if obj is None:
@@ -47,4 +46,3 @@ class CRUDBase(Generic[ModelType]):
         db.delete(obj)
         db.commit()
         return obj
-    

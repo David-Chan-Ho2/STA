@@ -1,7 +1,7 @@
 from pydantic import BaseModel, EmailStr
 
 class UserBase(BaseModel):
-     email: EmailStr
+    email: EmailStr
 
 class AuthRegister(UserBase):
     password: str
@@ -9,9 +9,6 @@ class AuthRegister(UserBase):
 
 class AuthLogin(UserBase):
     password: str
-
-class AuthLogout(UserBase):
-    pass
 
 class TokenResponse(BaseModel):
     access_token: str

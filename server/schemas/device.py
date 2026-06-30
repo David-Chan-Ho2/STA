@@ -1,40 +1,53 @@
 import uuid
 from typing import Optional
-from pydantic import BaseModel, EmailStr
+from pydantic import BaseModel
 from schemas.sensor_reading import SensorReadingResponse
 from datetime import datetime
+from models.Device import DeviceStatus
 
-class DeviceUserResponse(BaseModel):
+
+class DeviceOrgResponse(BaseModel):
     id: uuid.UUID
-    email: EmailStr
+    name: str
 
     model_config = {"from_attributes": True}
 
+
 class CreateDevice(BaseModel):
-    user_id: Optional[str] = None
+    org_id: Optional[str] = None
     name: str
     location: str
+    status: Optional[DeviceStatus] = None
+
 
 class UpdateDevice(BaseModel):
-    user_id: Optional[str] = None
+    org_id: Optional[str] = None
     name: Optional[str] = None
     location: Optional[str] = None
 
+
 class ClaimDevice(BaseModel):
-    user_id: str
+    org_id: str
     claimed_at: Optional[datetime] = None
+
 
 class DeviceResponse(BaseModel):
     id: uuid.UUID
-    user_id: Optional[uuid.UUID] = None
+    org_id: Optional[uuid.UUID] = None
     name: str
     location: str
+    created_at: datetime
 
     serial_number: uuid.UUID
     claim_code: uuid.UUID
+    status: DeviceStatus
 
-    user: Optional[DeviceUserResponse] = None
+    org: Optional[DeviceOrgResponse] = None
     readings: list[SensorReadingResponse]
 
     model_config = {"from_attributes": True}
 
+class DeviceStatsResponse(BaseModel):
+    total: int
+    online: int
+    offline: int

@@ -7,7 +7,6 @@ from utils.auth import session as user_session
 
 API_URL = "/api/auth"
 
-
 def _unique_email() -> str:
     return f"testauth_{uuid.uuid4().hex[:8]}@example.com"
 
@@ -39,7 +38,6 @@ def test_register_user(client: TestClient):
     data = response.json()
     assert data["email"] == email
     assert "id" in data
-    assert "devices" in data
 
 
 def test_register_duplicate_email(client: TestClient):
@@ -101,7 +99,6 @@ def test_get_me(client: TestClient):
     data = response.json()
     assert data["email"] == email
     assert "id" in data
-    assert "devices" in data
 
 
 def test_get_me_no_token(client: TestClient):

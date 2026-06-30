@@ -1,5 +1,4 @@
 import uuid
-from typing import Optional
 from pydantic import BaseModel
 from datetime import datetime
 
@@ -33,4 +32,3 @@ class SensorReadingResponse(BaseModel):
     type: SensorTypeResponse
 
     model_config = {"from_attributes": True}
-

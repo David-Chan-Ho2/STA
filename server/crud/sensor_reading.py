@@ -1,4 +1,4 @@
-from typing import Any, Optional
+from typing import Any
 
 from sqlalchemy import delete as sql_delete
 from sqlalchemy.orm import Session
@@ -23,9 +23,7 @@ class SensorReadingCRUD(CRUDBase):
         }
 
     def delete(self, db: Session, id: str) -> bool:
-        result = db.execute(sql_delete(self.model).where(self.model.id == id))
-        db.commit()
-        return result.rowcount > 0
+        raise NotImplementedError("Sensor readings cannot be deleted.")
 
     def update(self, db: Session, db_obj: Any, obj_in: Any):
         raise NotImplementedError("Sensor readings cannot be updated.")

@@ -17,9 +17,9 @@ class Settings:
     
     REDIS_URL = os.getenv("REDIS_URL", "redis://localhost:6379")
     SESSION_TIMEOUT_SECONDS = 1800
-    
-    
 
+    GOOGLE_CLIENT_ID = os.getenv("GOOGLE_CLIENT_ID", "")
+    GOOGLE_CLIENT_SECRET = os.getenv("GOOGLE_CLIENT_SECRET", "")
     
 
 settings = Settings()

@@ -17,4 +17,5 @@ export interface IToken {
 export interface IUser {
     id: string
     email: string
+    org_id?: string
 }

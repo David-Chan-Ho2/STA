@@ -10,7 +10,6 @@ from models.base import TimeScaleBase
 if TYPE_CHECKING:
     from models.Device import Device
 
-
 class SensorReading(TimeScaleBase):
     __tablename__ = 'sensor_readings'
 
@@ -21,6 +20,7 @@ class SensorReading(TimeScaleBase):
     value: Mapped[float] = mapped_column(Float, nullable=False)
     
     device: Mapped["Device"] = relationship("Device", back_populates="readings")
+    
     type: Mapped["SensorType"] = relationship("SensorType")
 
     __table_args__ = (

@@ -1,10 +1,11 @@
 import uuid
 import pytest
 from fastapi.testclient import TestClient
+from sqlalchemy import delete as sql_delete
 
 from main import app
 from config.database import SessionLocal
-from crud.sensor_reading import sensor_reading_crud
+from models.SensorReading import SensorReading
 
 @pytest.fixture(scope="module")
 def client():
@@ -46,10 +47,19 @@ def test_user(client: TestClient):
     return response.json()
 
 
+@pytest.fixture(scope="module")
+def test_org(client: TestClient):
+    response = client.post("/api/orgs", json={"name": f"org_{uuid.uuid4().hex[:8]}"})
+    assert response.status_code == 201
+    org = response.json()
+    yield org
+    client.delete(f"/api/orgs/{org['id']}")
+
+
 @pytest.fixture()
-def test_device(client: TestClient, test_user: dict):
+def test_device(client: TestClient, test_org: dict):
     response = client.post("/api/devices", json={
-        "user_id": test_user["id"],
+        "org_id": test_org["id"],
         "name": f"device_{uuid.uuid4().hex[:8]}",
         "location": "Test Location",
     })
@@ -83,5 +93,6 @@ def test_sensor_reading(client: TestClient, test_device: dict, test_sensor_type:
     reading = response.json()
     yield reading
     with SessionLocal() as db:
-        sensor_reading_crud.delete(db, reading['id'])
+        db.execute(sql_delete(SensorReading).where(SensorReading.id == uuid.UUID(reading['id'])))
+        db.commit()
 

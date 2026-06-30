@@ -1,19 +1,21 @@
 import uuid
+from typing import Optional
 from pydantic import BaseModel, EmailStr
-from schemas.device import DeviceResponse
+
+from enums.user_roles import UserRole
+
 
 class UserBase(BaseModel):
     email: EmailStr
 
-class CreateUser(BaseModel):
-    email: EmailStr
+
+class CreateUser(UserBase):
     password_hash: str
+    role: Optional[UserRole] = None
 
-class UserResponse(BaseModel):
-    
+
+class UserResponse(UserBase):
     id: uuid.UUID
-    email: EmailStr
-
-    devices: list[DeviceResponse]
+    org_id: Optional[uuid.UUID] = None
 
     model_config = {"from_attributes": True}

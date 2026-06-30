@@ -9,11 +9,11 @@ def test_get_all_devices(client: TestClient):
     assert isinstance(response.json(), list)
 
 
-def test_create_device(client: TestClient, test_user: dict):
+def test_create_device(client: TestClient, test_org: dict):
     name = f"device_{uuid.uuid4().hex[:8]}"
     location = "Room A"
     response = client.post(API_URL, json={
-        "user_id": test_user["id"],
+        "org_id": test_org["id"],
         "name": name,
         "location": location,
     })
@@ -21,22 +21,23 @@ def test_create_device(client: TestClient, test_user: dict):
     data = response.json()
     assert data["name"] == name
     assert data["location"] == location
-    assert data["user_id"] == test_user["id"]
-    assert data["user"]["id"] == test_user["id"]
+    assert data["org_id"] == test_org["id"]
+    assert data["org"]["id"] == test_org["id"]
     assert isinstance(data["readings"], list)
     client.delete(f"{API_URL}/{data['id']}")
 
 
-def test_create_device_user_not_found(client: TestClient):
+def test_create_device_org_not_found(client: TestClient):
     response = client.post(API_URL, json={
-        "user_id": str(uuid.uuid4()),
+        "org_id": str(uuid.uuid4()),
         "name": "orphan_device",
         "location": "Nowhere",
     })
     assert response.status_code == 404
 
-def test_create_device_no_user(client: TestClient):
-    name = "no_user"
+
+def test_create_device_no_org(client: TestClient):
+    name = "no_org"
 
     response = client.post(API_URL, json={
         "name": name,
@@ -44,11 +45,11 @@ def test_create_device_no_user(client: TestClient):
     })
 
     assert response.status_code == 201
-    
+
     data = response.json()
     assert data['name'] == name
-    assert data['user_id'] == None
-    assert data['user'] == None
+    assert data['org_id'] is None
+    assert data['org'] is None
 
 
 def test_get_device_by_id(client: TestClient, test_device: dict):
@@ -90,9 +91,9 @@ def test_update_device_not_found(client: TestClient):
     assert response.status_code == 404
 
 
-def test_delete_device(client: TestClient, test_user: dict):
+def test_delete_device(client: TestClient, test_org: dict):
     create_resp = client.post(API_URL, json={
-        "user_id": test_user["id"],
+        "org_id": test_org["id"],
         "name": f"deletable_{uuid.uuid4().hex[:8]}",
         "location": "Temp",
     })
@@ -120,9 +121,9 @@ def test_get_device_readings_not_found(client: TestClient):
     response = client.get(f"{API_URL}/{uuid.uuid4()}/readings")
     assert response.status_code == 404
 
-def test_get_device_by_claim_code(client: TestClient, test_user: dict, test_device: dict):
+def test_get_device_by_claim_code(client: TestClient, test_org: dict, test_device: dict):
     claim_response = client.post(f"{API_URL}/claim/{test_device['claim_code']}", json={
-        'user_id': test_user['id']
+        'org_id': test_org['id']
     })
 
     assert claim_response.status_code == 200
@@ -135,5 +136,5 @@ def test_get_device_by_claim_code(client: TestClient, test_user: dict, test_devi
     claim_data = claim_response.json()
 
     assert get_data['id'] == claim_data['id']
-    assert get_data['user_id'] == test_user['id']
+    assert get_data['org_id'] == test_org['id']
 
