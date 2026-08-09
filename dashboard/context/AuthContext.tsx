@@ -14,6 +14,7 @@ type AuthContextType = {
   user: IUser | null;
   token: IToken | null;
   isAuthenticated: boolean;
+  isLoading: boolean;
   register: (form: IRegister) => Promise<void>;
   login: (form: ILogin) => Promise<void>;
   logout: () => void;
@@ -24,17 +25,22 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<IUser | null>(null);
   const [token, setToken] = useState<IToken | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     const savedToken = localStorage.getItem("token");
-    if (!savedToken) return;
+    if (!savedToken) {
+      setIsLoading(false);
+      return;
+    }
     setToken({ access_token: savedToken, token_type: "bearer" });
     api.auth
       .getMe()
       .then(setUser)
       .catch(() => {
         localStorage.removeItem("token");
-      });
+      })
+      .finally(() => setIsLoading(false));
   }, []);
 
   const register = async (form: IRegister) => {
@@ -62,6 +68,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         user,
         token,
         isAuthenticated: !!user,
+        isLoading,
         register,
         login,
         logout,

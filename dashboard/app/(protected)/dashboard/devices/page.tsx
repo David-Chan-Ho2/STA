@@ -31,7 +31,7 @@ function DevicesPage() {
     setSearch(e.target.value);
   };
 
-  const filteredDevices = devices.filter((device: IDevice) => {
+  const filteredDevices = devices?.filter((device: IDevice) => {
     if (!search.trim()) return true;
 
     const normalizedQuery = search.toLowerCase();
@@ -68,8 +68,8 @@ function DevicesPage() {
           </TableRow>
         </TableHeader>
         <TableBody>
-          {filteredDevices.length > 0 ? (
-            filteredDevices.map((device: IDevice) => (
+          {filteredDevices!.length > 0 ? (
+            filteredDevices?.map((device: IDevice) => (
               <TableRow key={device.id}>
                 <TableCell>
                   <Link
@@ -111,7 +111,7 @@ function DevicesPage() {
             <TableCell colSpan={2} className="text-right">
               Total Devices
             </TableCell>
-            <TableCell colSpan={3}>{filteredDevices.length}</TableCell>
+            <TableCell colSpan={3}>{filteredDevices?.length}</TableCell>
           </TableRow>
         </TableFooter>
       </Table>

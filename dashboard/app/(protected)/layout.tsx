@@ -2,12 +2,16 @@
 import { useAuth } from "@/context/AuthContext";
 import { redirect } from "next/navigation";
 
-export default async function ProtectedLayout({
+export default function ProtectedLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
-  const { isAuthenticated } = useAuth();
+  const { isAuthenticated, isLoading } = useAuth();
+
+  if (isLoading) {
+    return null;
+  }
 
   if (!isAuthenticated) {
     redirect("/login");

@@ -1,4 +1,4 @@
-import { IDevice } from "@/types/devices.types"
+import { IDevice, IDeviceStats } from "@/types/devices.types"
 import useSWR from "swr"
 import { authAxios, BASE_URL, fetcher } from "./base.api"
 
@@ -33,7 +33,7 @@ export const deleteDeviceAPI = async (id: string): Promise<void> => {
 }
 
 export const getDeviceStatsAPI = () => {
-    const { data, error, isLoading } = useSWR(`${DEVICES_URL}/stats`, fetcher)
+    const { data, error, isLoading } = useSWR<IDeviceStats>(`${DEVICES_URL}/stats`, fetcher)
     return {
         stats: data,
         isLoading,

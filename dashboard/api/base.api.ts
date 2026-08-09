@@ -7,11 +7,25 @@ export const authAxios = axios.create()
 
 authAxios.interceptors.request.use((config) => {
     const token = localStorage.getItem("token")
+
     if (token) {
         config.headers.Authorization = `Bearer ${token}`
     }
+
     return config
 })
+
+authAxios.interceptors.response.use(
+    (response) => response,
+    (error) => {
+        if (error.response?.status === 401) {
+            localStorage.removeItem("token")
+            window.location.href = "/login"
+        }
+
+        return Promise.reject(error)
+    }
+)
 
 export const fetcher = async (url: string) => {
     const { data } = await authAxios.get(url)

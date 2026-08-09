@@ -5,7 +5,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 
 import api from "@/api";
-import { IOrg } from "@/types/orgs.types";
+import { IOrg } from "@/types/organizations.types";
 import {
   Table,
   TableBody,
@@ -25,32 +25,32 @@ import {
   DialogFooter,
 } from "@/components/ui/dialog";
 
-function OrgsPage() {
-  const { orgs, mutate, error, isLoading } = api.orgs.getAll();
+function OrganizationsPage() {
+  const { orgs, mutate, error, isLoading } = api.organizations.getAll();
   const router = useRouter();
   const [createOpen, setCreateOpen] = useState(false);
   const [newName, setNewName] = useState("");
   const [creating, setCreating] = useState(false);
 
-  if (error) return <div>Failed to load orgs.</div>;
+  if (error) return <div>Failed to load organizations.</div>;
   if (isLoading) return <div>Loading...</div>;
 
   const handleCreate = async () => {
     if (!newName.trim()) return;
     setCreating(true);
     try {
-      const org = await api.orgs.create(newName.trim());
+      const org = await api.organizations.create(newName.trim());
       mutate();
       setCreateOpen(false);
       setNewName("");
-      router.push(`/dashboard/orgs/${org.id}`);
+      router.push(`/dashboard/organizations/${org.id}`);
     } finally {
       setCreating(false);
     }
   };
 
   const handleDelete = async (id: string) => {
-    await api.orgs.delete(id);
+    await api.organizations.delete(id);
     mutate();
   };
 
@@ -75,7 +75,7 @@ function OrgsPage() {
               <TableRow key={org.id}>
                 <TableCell>
                   <Link
-                    href={`/dashboard/orgs/${org.id}`}
+                    href={`/dashboard/organizations/${org.id}`}
                     className="hover:underline font-medium"
                   >
                     {org.name}
@@ -139,4 +139,4 @@ function OrgsPage() {
   );
 }
 
-export default OrgsPage;
+export default OrganizationsPage;

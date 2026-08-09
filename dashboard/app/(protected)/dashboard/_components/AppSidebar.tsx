@@ -1,3 +1,5 @@
+"use client";
+
 import {
   Sidebar,
   SidebarContent,
@@ -9,19 +11,13 @@ import {
   SidebarMenuItem,
 } from "@/components/ui/sidebar";
 import { useAuth } from "@/context/AuthContext";
-import {
-  Building2,
-  Computer,
-  DoorOpen,
-  LayoutDashboard,
-  Settings,
-} from "lucide-react";
+import { Building2, Computer, LayoutDashboard, Settings } from "lucide-react";
 import Link from "next/link";
 
 const items = [
   { title: "Dashboard", url: "/dashboard", icon: LayoutDashboard },
   { title: "Devices", url: "/dashboard/devices", icon: Computer },
-  { title: "Organizations", url: "/dashboard/orgs", icon: Building2 },
+  { title: "Organizations", url: "/dashboard/organizations", icon: Building2 },
   { title: "Settings", url: "/dashboard/settings", icon: Settings },
 ];
 
@@ -52,12 +48,9 @@ function AppSidebar() {
       <SidebarFooter className="p-4 text-sm">
         <SidebarMenu>
           <SidebarMenuItem>
-            <SidebarMenuButton>
-              <Link href="/" onClick={logout}>
-                <DoorOpen />
-                <span>Log out</span>
-              </Link>
-            </SidebarMenuButton>
+            <Link href="/" onClick={logout}>
+              Log out
+            </Link>
           </SidebarMenuItem>
         </SidebarMenu>
       </SidebarFooter>

@@ -1,4 +1,4 @@
-import ISensorReading from "./sensor_reading";
+import ISensorReading from "./sensor_reading"
 
 export interface IDevice {
     id: string
@@ -11,4 +11,10 @@ export interface IDevice {
     status: string
     created_at: string
     readings: ISensorReading[]
+}
+
+export interface IDeviceStats {
+    total: number
+    online: number
+    offline: number
 }

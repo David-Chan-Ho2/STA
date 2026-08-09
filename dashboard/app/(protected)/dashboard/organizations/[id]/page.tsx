@@ -5,7 +5,7 @@ import { useParams } from "next/navigation";
 import Link from "next/link";
 
 import api from "@/api";
-import { IOrgUser } from "@/types/orgs.types";
+import { IOrgUser } from "@/types/organizations.types";
 import { IDevice } from "@/types/devices.types";
 import {
   Table,
@@ -20,7 +20,7 @@ import { Input } from "@/components/ui/input";
 
 function OrgDetailPage() {
   const { id } = useParams<{ id: string }>();
-  const { org, mutate, error, isLoading } = api.orgs.get(id);
+  const { org, mutate, error, isLoading } = api.organizations.get(id);
   const [editing, setEditing] = useState(false);
   const [newName, setNewName] = useState("");
   const [addUserId, setAddUserId] = useState("");
@@ -33,7 +33,7 @@ function OrgDetailPage() {
     if (!newName.trim()) return;
     setSaving(true);
     try {
-      await api.orgs.update(org.id, newName.trim());
+      await api.organizations.update(org.id, newName.trim());
       mutate();
       setEditing(false);
       setNewName("");
@@ -44,13 +44,13 @@ function OrgDetailPage() {
 
   const handleAddUser = async () => {
     if (!addUserId.trim()) return;
-    await api.orgs.addUser(org.id, addUserId.trim());
+    await api.organizations.addUser(org.id, addUserId.trim());
     mutate();
     setAddUserId("");
   };
 
   const handleRemoveUser = async (userId: string) => {
-    await api.orgs.removeUser(org.id, userId);
+    await api.organizations.removeUser(org.id, userId);
     mutate();
   };
 

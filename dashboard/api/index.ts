@@ -1,6 +1,6 @@
 import { getMeAPI, loginEmailAPI, loginSSOAPI, logoutAPI, registerEmailAPI, registerSSOAPI } from './auth.api'
 import { claimDeviceAPI, deleteDeviceAPI, getDeviceAPI, getDevicesAPI, getDeviceStatsAPI } from './devices.api'
-import { addUserToOrgAPI, createOrgAPI, deleteOrgAPI, getOrgAPI, getOrgsAPI, getOrgDevicesAPI, getOrgUsersAPI, removeUserFromOrgAPI, updateOrgAPI } from './orgs.api'
+import { addUserToOrgAPI, createOrgAPI, deleteOrgAPI, getOrgAPI, getOrgsAPI, getOrgDevicesAPI, getOrgUsersAPI, removeUserFromOrgAPI, updateOrgAPI } from './organizations.api'
 
 export default {
     auth: {
@@ -22,7 +22,7 @@ export default {
         delete: deleteDeviceAPI,
         claim: claimDeviceAPI,
     },
-    orgs: {
+    organizations: {
         getAll: getOrgsAPI,
         get: getOrgAPI,
         getUsers: getOrgUsersAPI,
