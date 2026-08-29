@@ -1,0 +1,6 @@
+[submodule "sta-mobile"]
+	path = sta-mobile
+	url = https://github.com/David-Chan-Ho2/sta-mobile.git
+[submodule "mobile"]
+	path = mobile
+	url = https://github.com/David-Chan-Ho2/sta-mobile.git
