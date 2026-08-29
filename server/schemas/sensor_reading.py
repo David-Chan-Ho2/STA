@@ -4,12 +4,6 @@ from datetime import datetime
 
 from schemas.sensor_types import SensorTypeResponse
 
-class DeviceResponse(BaseModel):
-    id: uuid.UUID
-    user_id: uuid.UUID
-    name: str
-    location: str
-
 class CreateSensorReading(BaseModel):
     device_id: str
     sensor_type_id: str
@@ -28,7 +22,6 @@ class SensorReadingResponse(BaseModel):
     value: float
     time: datetime
 
-    device: DeviceResponse
     type: SensorTypeResponse
 
     model_config = {"from_attributes": True}

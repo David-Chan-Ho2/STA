@@ -9,8 +9,8 @@ export default function Footer() {
             <span className="text-lg font-semibold text-white">
               {config.name}
             </span>
-            <p className="text-sm text-gray-400">
-              Lorem ipsum dolor sit amet consectetur adipisicing elit.
+            <p className="text-sm text-gray-400 mt-2">
+              Intelligent IoT solutions for modern HVAC monitoring and control.
             </p>
           </div>
 
@@ -77,11 +77,6 @@ export default function Footer() {
               <li>
                 <a href="#" className="hover:text-white">
                   Support
-                </a>
-              </li>
-              <li>
-                <a href="#" className="hover:text-white">
-                  Blog
                 </a>
               </li>
               <li>

@@ -4,7 +4,7 @@ from datetime import datetime, UTC
 
 from api.endpoints.base import BaseRouter
 from config.database import get_db
-from crud.orgs import orgs_crud
+from crud.organizations import organizations_crud
 from crud.devices import device_crud
 from exceptions.base import NotFoundException
 from models import User
@@ -55,7 +55,7 @@ class DeviceRouter(BaseRouter):
         )
 
     def create(self, payload: CreateDevice, db: Session = Depends(get_db)):
-        if payload.org_id and orgs_crud.get_by_id(db, payload.org_id) is None:
+        if payload.org_id and organizations_crud.get_by_id(db, payload.org_id) is None:
             raise NotFoundException(resource_name="Org")
         return super().create(payload, db)
 
@@ -72,7 +72,7 @@ class DeviceRouter(BaseRouter):
         if device is None:
             raise NotFoundException(resource_name="Device")
 
-        org = orgs_crud.get_by_id(db, payload.org_id)
+        org = organizations_crud.get_by_id(db, payload.org_id)
         if org is None:
             raise NotFoundException(resource_name="Org")
 

@@ -49,11 +49,11 @@ def test_user(client: TestClient):
 
 @pytest.fixture(scope="module")
 def test_org(client: TestClient):
-    response = client.post("/api/orgs", json={"name": f"org_{uuid.uuid4().hex[:8]}"})
+    response = client.post("/api/organizations", json={"name": f"org_{uuid.uuid4().hex[:8]}"})
     assert response.status_code == 201
     org = response.json()
     yield org
-    client.delete(f"/api/orgs/{org['id']}")
+    client.delete(f"/api/organizations/{org['id']}")
 
 
 @pytest.fixture()

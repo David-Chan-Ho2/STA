@@ -15,7 +15,10 @@ function HeroSection() {
               Smart HVAC Control for Modern Buildings
             </h1>
             <p className="text-xl text-gray-600 mb-8">
-              Transform your building's climate control with intelligent IoT sensors and real-time analytics. Our platform connects your HVAC systems to the cloud, giving you full visibility and control — reducing energy costs and improving occupant comfort.
+              Transform your building's climate control with intelligent IoT
+              sensors and real-time analytics. Our platform connects your HVAC
+              systems to the cloud, giving you full visibility and control —
+              reducing energy costs and improving occupant comfort.
             </p>
             <div className="flex flex-wrap gap-4">
               <Button size="lg" className="bg-blue-600 hover:bg-blue-700">

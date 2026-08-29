@@ -1,5 +1,5 @@
 import AppSidebar from "@/app/(protected)/dashboard/_components/AppSidebar";
-import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
+import { SidebarProvider } from "@/components/ui/sidebar";
 import { ThemeProvider } from "@/context/ThemeContext";
 
 export default function DashboardLayout({
@@ -11,8 +11,7 @@ export default function DashboardLayout({
     <ThemeProvider>
       <SidebarProvider>
         <AppSidebar />
-        <main className="w-full p-4">
-          <SidebarTrigger />
+        <main className="flex flex-col flex-1 min-h-0 overflow-hidden">
           {children}
         </main>
       </SidebarProvider>

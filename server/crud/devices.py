@@ -2,7 +2,7 @@ from sqlalchemy.orm import Session
 from sqlalchemy import desc
 
 from models.Device import Device
-from models.Org import Org
+from models.Organization import Organization
 from models.SensorReading import SensorReading
 from enums.device_status import DeviceStatus
 
@@ -14,9 +14,9 @@ class DeviceCrud(CRUDBase):
         super().__init__(Device)
 
     def lastest_reading(self, id: str, db: Session):
-        return db.query(SensorReading).filter(SensorReading.device_id == id).order_by(desc(SensorReading.time)).first()
+        return db.query(SensorReading).filter(SensorReading.id == id).order_by(desc(SensorReading.time)).first()
 
-    def get_stats(self, org: Org):
+    def get_stats(self, org: Organization):
         devices = org.devices if org else []
 
         total = len(devices)

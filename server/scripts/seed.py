@@ -11,12 +11,12 @@ import random
 from config.database import SessionLocal
 from crud.user import user_crud
 from crud.devices import device_crud
-from crud.orgs import orgs_crud
+from crud.organizations import organizations_crud
 from crud.sensor_reading import sensor_reading_crud
 from crud.sensor_types import sensor_types_crud
 from schemas.user import CreateUser
 from schemas.device import CreateDevice
-from schemas.orgs import CreateOrg
+from schemas.organizations import CreateOrganization
 from schemas.sensor_types import CreateSensorType
 from schemas.sensor_reading import BatchCreateSensorReading, CreateSensorReading
 from enums.user_roles import UserRole
@@ -57,19 +57,20 @@ def seed():
             ))
 
         # Regular user
-        customer = user_crud.get(db, email="user@example.com")
-        if not customer:
-            customer = user_crud.create(db, CreateUser(
+        user = user_crud.get(db, email="user@example.com")
+        if not user:
+            user = user_crud.create(db, CreateUser(
                 email="user@example.com",
                 password_hash=hash_password("user1234"),
             ))
 
         # Default org
-        org = orgs_crud.get(db, name="Default Org")
+        org = organizations_crud.get(db, name="Default Org")
         if not org:
-            org = orgs_crud.create(db, CreateOrg(name="Default Org"))
-        orgs_crud.add_user(db, org, admin)
-        orgs_crud.add_user(db, org, customer)
+            from enums.organization_types import OrganizationType
+            org = organizations_crud.create(db, CreateOrganization(name="Default Org", type=OrganizationType.HVAC))
+        organizations_crud.add_user(db, org, admin)
+        organizations_crud.add_user(db, org, user)
 
         # Devices (first two owned by org, third unclaimed)
         org_ids = [str(org.id), str(org.id), None]
@@ -106,7 +107,7 @@ def seed():
                 BatchCreateSensorReading(readings=readings),
             )
 
-        print(f"Seeded: {len(sensor_types)} sensor types, 2 users, 1 org, "
+        print(f"Seeded: {len(sensor_types)} sensor types, 2 users, 1 organization, "
               f"{len(devices)} devices, {24 * len(sensor_types) * 2} readings")
     finally:
         db.close()

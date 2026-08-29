@@ -20,9 +20,9 @@ from utils.auth import (
     hash_password,
 )
 
-router = APIRouter()
+auth_router = APIRouter()
 
-@router.post('/email/register', response_model=UserResponse, status_code=status.HTTP_201_CREATED)
+@auth_router.post('/email/register', response_model=UserResponse, status_code=status.HTTP_201_CREATED)
 def register(payload: AuthRegister, db: Session = Depends(get_db)) -> User:
     if user_crud.get(db, email=payload.email):
         raise EmailAlreadyExistsException()
@@ -37,7 +37,7 @@ def register(payload: AuthRegister, db: Session = Depends(get_db)) -> User:
 
     return user_crud.create(db, user)
 
-@router.post('/email/login', response_model=TokenResponse, status_code=status.HTTP_200_OK)
+@auth_router.post('/email/login', response_model=TokenResponse, status_code=status.HTTP_200_OK)
 def login(payload: AuthLogin, db: Session = Depends(get_db)):
     user = user_crud.get(db, email=payload.email)
 
@@ -48,12 +48,12 @@ def login(payload: AuthLogin, db: Session = Depends(get_db)):
 
     return {"access_token": token, "token_type": "bearer"}
 
-@router.get("/sso/login")
+@auth_router.get("/sso/login")
 async def auth_login():
     with google_sso:
         return await google_sso.get_login_redirect()
 
-@router.get("/sso/callback")
+@auth_router.get("/sso/callback")
 async def auth_callback(request: Request):
     with google_sso:
         try:
@@ -69,14 +69,14 @@ async def auth_callback(request: Request):
         "picture": user.picture
     }
 
-@router.get('/logout', response_model=None, status_code=status.HTTP_200_OK)
+@auth_router.get('/logout', response_model=None, status_code=status.HTTP_200_OK)
 def logout(_=Depends(logout_user)) -> bool:
     return True
 
-@router.get("/me", response_model=UserResponse, status_code=status.HTTP_200_OK)
+@auth_router.get("/me", response_model=UserResponse, status_code=status.HTTP_200_OK)
 def get_me(current_user: User = Depends(get_current_user)) -> User:
     return current_user
 
-@router.post('/verify-email', response_model=UserResponse, status_code=status.HTTP_200_OK)
+@auth_router.post('/verify-email', response_model=UserResponse, status_code=status.HTTP_200_OK)
 def verify():
     pass

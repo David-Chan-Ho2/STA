@@ -1,7 +1,7 @@
 from enum import Enum
 
 class DeviceStatus(Enum):
-    OFFLINE = 'offline'
-    ONLINE = 'online'
-    WARNING = 'warning'
-    ERROR = 'error'
+    OFFLINE = 'Offline'
+    ONLINE = 'Online'
+    WARNING = 'Warning'
+    ERROR = 'Error'

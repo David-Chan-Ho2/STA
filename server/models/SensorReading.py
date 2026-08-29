@@ -9,6 +9,7 @@ from models.base import TimeScaleBase
 
 if TYPE_CHECKING:
     from models.Device import Device
+    from models.SensorType import SensorType
 
 class SensorReading(TimeScaleBase):
     __tablename__ = 'sensor_readings'
